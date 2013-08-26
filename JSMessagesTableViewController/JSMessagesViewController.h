@@ -110,6 +110,7 @@ typedef enum {
 
 #pragma mark - Initialization
 - (UIButton *)sendButton;
+- (UIButton *)leftAccessoryButton;
 
 #pragma mark - Actions
 - (void)sendPressed:(UIButton *)sender;

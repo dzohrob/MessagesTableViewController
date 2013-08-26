@@ -90,12 +90,24 @@ extern NSString* const JSMessageTapNotification;
                    action:@selector(sendPressed:)
          forControlEvents:UIControlEventTouchUpInside];
     [self.inputToolBarView setSendButton:sendButton];
+    
+    UIButton* left = [self leftAccessoryButton];
+    if(left) {
+        left.frame = CGRectMake(8,8, left.frame.size.width, left.frame.size.height);
+        [self.inputToolBarView setLeftAccessoryButton:left];
+    }
+    
     [self.view addSubview:self.inputToolBarView];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleMessageTapped:)
                                                  name:JSMessageTapNotification
                                                object:nil];
+}
+
+- (UIButton *)leftAccessoryButton
+{
+    return nil;
 }
 
 - (UIButton *)sendButton
