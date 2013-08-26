@@ -142,7 +142,7 @@ extern NSString* const JSMessageTapNotification;
     [super viewWillDisappear:animated];
     [self.inputToolBarView resignFirstResponder];
     [self setEditing:NO animated:YES];
-    
+
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
 }
@@ -204,6 +204,17 @@ extern NSString* const JSMessageTapNotification;
     return 0;
 }
 
+- (UIView*) contentViewForIndexPath:(NSIndexPath*)indexPath
+{
+    UIView* view = nil;
+    if([self.dataSource respondsToSelector:@selector(viewForRowAtIndexPath:)])
+    {
+        view = [self.dataSource viewForRowAtIndexPath:indexPath];
+    }
+
+    return view;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     JSBubbleMessageType type = [self.delegate messageTypeForRowAtIndexPath:indexPath];
@@ -260,8 +271,7 @@ extern NSString* const JSMessageTapNotification;
                 break;
         }
     }
-    
-    [cell setMessage:[self.dataSource textForRowAtIndexPath:indexPath]];
+        
     [cell setBackgroundColor:tableView.backgroundColor];
     
     UIImage* bubbleImage, *selectedBubbleImage;
@@ -283,8 +293,16 @@ extern NSString* const JSMessageTapNotification;
         color = [self.dataSource textColorForMessageAtIndexPath:indexPath];
     }
     
-    [cell setMessageColor:color];
+    [cell setMessageColor:color];    
     
+    UIView* view = [self contentViewForIndexPath:indexPath];
+    if(view) {
+        [cell setContentView:view];
+    }
+    else {
+        [cell setMessage:[self.dataSource textForRowAtIndexPath:indexPath]];
+    }
+
     return cell;
 }
 
@@ -296,10 +314,20 @@ extern NSString* const JSMessageTapNotification;
 		hasSubtitle = [self.delegate hasSubtitleForRowAtIndexPath:indexPath];
 	}
 	
-    return [JSBubbleMessageCell neededHeightForText:[self.dataSource textForRowAtIndexPath:indexPath]
-                                          timestamp:[self shouldHaveTimestampForRowAtIndexPath:indexPath]
-										   subtitle:hasSubtitle
-                                             avatar:[self shouldHaveAvatarForRowAtIndexPath:indexPath]];
+    UIView* view = [self contentViewForIndexPath:indexPath];
+    if(view)
+    {
+        return [JSBubbleMessageCell neededHeightForView:view
+                                              timestamp:[self shouldHaveTimestampForRowAtIndexPath:indexPath]
+                                               subtitle:hasSubtitle
+                                                 avatar:[self shouldHaveAvatarForRowAtIndexPath:indexPath]];
+    }
+    else {
+        return [JSBubbleMessageCell neededHeightForText:[self.dataSource textForRowAtIndexPath:indexPath]
+                                              timestamp:[self shouldHaveTimestampForRowAtIndexPath:indexPath]
+                                               subtitle:hasSubtitle
+                                                 avatar:[self shouldHaveAvatarForRowAtIndexPath:indexPath]];
+    }
 }
 
 #pragma mark - Messages view controller

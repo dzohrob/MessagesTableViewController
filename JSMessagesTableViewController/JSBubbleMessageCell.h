@@ -55,6 +55,7 @@ typedef enum {
 
 #pragma mark - Message cell
 - (void)setMessage:(NSString *)msg;
+- (void)setContentView:(UIView*)view;
 - (void)setSubtitle:(NSString *)subtitle;
 - (void)setMessageColor:(UIColor *)textColor;
 - (void)setTimestamp:(NSDate *)date;
@@ -65,6 +66,11 @@ andSelectedBubbleImage:(UIImage*)selectedBubbleImage;
 + (CGFloat)neededHeightForText:(NSString *)bubbleViewText
                      timestamp:(BOOL)hasTimestamp
 					  subtitle:(BOOL)hasSubtitle
+                        avatar:(BOOL)hasAvatar;
+
++ (CGFloat)neededHeightForView:(UIView *)view
+                     timestamp:(BOOL)hasTimestamp
+                      subtitle:(BOOL)hasSubtitle
                         avatar:(BOOL)hasAvatar;
 
 @end

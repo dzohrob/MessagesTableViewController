@@ -41,6 +41,8 @@ CGFloat const kJSAvatarSize = 50.0f;
 
 #define kMarginTop 8.0f
 #define kMarginBottom 4.0f
+#define kMarginLeft 16
+#define kMarginRight 16
 #define kPaddingTop 4.0f
 #define kPaddingBottom 8.0f
 #define kBubblePaddingRight 35.0f
@@ -48,6 +50,11 @@ CGFloat const kJSAvatarSize = 50.0f;
 @interface JSBubbleView()
 
 - (void)setup;
+- (UIImage *)bubbleImage;
+- (CGRect)bubbleFrame;
+
++ (CGSize)textSizeForText:(NSString *)txt;
++ (CGSize)bubbleSizeForContentSize:(CGSize)contentSize;
 
 @property (retain, nonatomic) UIImage* bubbleImage;
 @property (retain, nonatomic) UIImage* selectedBubbleImage;
@@ -60,6 +67,7 @@ CGFloat const kJSAvatarSize = 50.0f;
 @synthesize text;
 @synthesize selectedToShowCopyMenu;
 @synthesize textColor;
+@synthesize contentView;
 
 #pragma mark - Setup
 - (void)setup
@@ -102,7 +110,8 @@ CGFloat const kJSAvatarSize = 50.0f;
 
 - (void)setText:(NSString *)newText
 {
-    text = newText;
+    self.contentView = nil;
+    text = newText;    
     [self setNeedsDisplay];
 }
 
@@ -119,7 +128,19 @@ andSelectedBubbleImage:(UIImage*)selectedBubbleImage {
     [self setNeedsDisplay];
 }
 
-- (void)textColor:(UIColor*)newColor
+- (void)setContentView:(UIView *)newView
+{
+    if(self.contentView)
+        [self.contentView removeFromSuperview];
+    
+    text = nil;
+    contentView = newView;
+    
+    [self addSubview:newView];
+    [self setNeedsDisplay];
+}
+    
+- (void)setTextColor:(UIColor *)newColor
 {
     textColor = newColor;
     [self setNeedsDisplay];
@@ -128,40 +149,77 @@ andSelectedBubbleImage:(UIImage*)selectedBubbleImage {
 #pragma mark - Drawing
 - (CGRect)bubbleFrame
 {
-    CGSize bubbleSize = [JSBubbleView bubbleSizeForText:self.text];
+    CGSize bubbleSize;
+    CGSize contentSize;
+    
+    if(self.contentView)
+    {
+        contentSize = [JSBubbleView sizeForContentView:self.contentView];
+    }
+    else
+        contentSize = [JSBubbleView textSizeForText:self.text];
+
+    bubbleSize = [JSBubbleView bubbleSizeForContentSize:contentSize];
+    
     return CGRectMake((self.type == JSBubbleMessageTypeOutgoing ? self.frame.size.width - bubbleSize.width : 0.0f),
                       kMarginTop,
                       bubbleSize.width,
                       bubbleSize.height);
 }
 
-- (void)drawRect:(CGRect)frame
+- (void)layoutSubviews
 {
-    [super drawRect:frame];
+    [super layoutSubviews];
     
-	UIImage *image = nil;
+    if(self.contentView) {
+        UIImage *image = [self correctBubbleImage];
+        CGRect bubbleFrame = [self bubbleFrame];
+        
+        CGFloat startX = (self.type == JSBubbleMessageTypeOutgoing ? bubbleFrame.origin.x : 0.0f);
+            
+        self.contentView.frame = CGRectMake(startX + image.capInsets.left + kMarginLeft,
+                                            image.capInsets.top + kPaddingTop,
+                                            self.contentView.frame.size.width,
+                                            self.contentView.frame.size.height);
+    }
+    
+}
+
+- (UIImage*)correctBubbleImage
+{
+    UIImage* image = nil;
     if(self.selectedToShowCopyMenu)
         image = self.selectedBubbleImage;
     else
         image = self.bubbleImage;
     
+    return image;
+}
+
+- (void)drawRect:(CGRect)frame
+{
+    [super drawRect:frame];
+    
+	UIImage *image = [self correctBubbleImage];
     CGRect bubbleFrame = [self bubbleFrame];
 	[image drawInRect:bubbleFrame];
-	
-	CGSize textSize = [JSBubbleView textSizeForText:self.text];
-	
-    CGFloat textX = image.leftCapWidth - 3.0f + (self.type == JSBubbleMessageTypeOutgoing ? bubbleFrame.origin.x : 0.0f);
     
-    CGRect textFrame = CGRectMake(textX,
-                                  kPaddingTop + kMarginTop,
-                                  textSize.width,
-                                  textSize.height);
-    
-    [self.textColor set];
-	[self.text drawInRect:textFrame
-                 withFont:[JSBubbleView font]
-            lineBreakMode:NSLineBreakByWordWrapping
-                alignment:NSTextAlignmentLeft];
+    if(!self.contentView) {	
+        CGSize textSize = [JSBubbleView textSizeForText:self.text];
+        
+        CGFloat textX = image.leftCapWidth - 3.0f + (self.type == JSBubbleMessageTypeOutgoing ? bubbleFrame.origin.x : 0.0f);
+        
+        CGRect textFrame = CGRectMake(textX,
+                                      kPaddingTop + kMarginTop,
+                                      textSize.width,
+                                      textSize.height);
+        
+        [self.textColor set];
+        [self.text drawInRect:textFrame
+                     withFont:[JSBubbleView font]
+                lineBreakMode:NSLineBreakByWordWrapping
+                    alignment:NSTextAlignmentLeft];
+    }
 }
 
 #pragma mark - Bubble view
@@ -182,16 +240,29 @@ andSelectedBubbleImage:(UIImage*)selectedBubbleImage {
                lineBreakMode:NSLineBreakByWordWrapping];
 }
 
-+ (CGSize)bubbleSizeForText:(NSString *)txt
++ (CGSize)bubbleSizeForContentSize:(CGSize)contentSize
 {
-	CGSize textSize = [JSBubbleView textSizeForText:txt];
-	return CGSizeMake(textSize.width + kBubblePaddingRight,
-                      textSize.height + kPaddingTop + kPaddingBottom);
+	return CGSizeMake(contentSize.width + kBubblePaddingRight,
+                      contentSize.height + kPaddingTop + kPaddingBottom);
 }
 
 + (CGFloat)cellHeightForText:(NSString *)txt
 {
-    return [JSBubbleView bubbleSizeForText:txt].height + kMarginTop + kMarginBottom;
+    CGSize textSize = [JSBubbleView textSizeForText:txt];
+    return [JSBubbleView bubbleSizeForContentSize:textSize].height + kMarginTop + kMarginBottom;
+}
+
++ (CGSize)sizeForContentView:(UIView*)view
+{
+    CGSize size =  view.bounds.size;
+    size.width = size.width + kMarginLeft + kMarginRight;
+    size.height = size.height + kMarginTop + kMarginBottom;
+    return size;
+}
+
++ (CGFloat)cellHeightForView:(UIView*)view
+{
+    return [JSBubbleView bubbleSizeForContentSize:[JSBubbleView sizeForContentView:view]].height + kMarginTop + kMarginBottom;
 }
 
 + (int)maxCharactersPerLine

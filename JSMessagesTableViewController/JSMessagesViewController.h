@@ -80,6 +80,7 @@ typedef enum {
 @protocol JSMessagesViewDataSource <NSObject>
 @required
 - (NSString *)textForRowAtIndexPath:(NSIndexPath *)indexPath;
+- (UIView*) viewForRowAtIndexPath:(NSIndexPath*)indexPath;
 - (NSDate *)timestampForRowAtIndexPath:(NSIndexPath *)indexPath;
 
 @optional

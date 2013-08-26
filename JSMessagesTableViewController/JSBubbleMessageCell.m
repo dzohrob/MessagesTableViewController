@@ -237,6 +237,11 @@ NSString* const JSMessageTapNotification = @"JSMessageTapNotification";
     self.bubbleView.textColor = textColor;
 }
 
+- (void)setContentView:(UIView*)view
+{
+    self.bubbleView.contentView = view;
+}
+
 - (void)setTimestamp:(NSDate *)date
 {
     self.timestampLabel.text = [NSDateFormatter localizedStringFromDate:date
@@ -275,6 +280,14 @@ andSelectedBubbleImage:(UIImage*)selectedBubbleImage;
     CGFloat avatarHeight = (hasAvatar) ? kJSAvatarSize : 0.0f;
 	CGFloat subtitleHeight = hasSubtitle ? SUBTITLE_LABEL_HEIGHT : 0.0f;
     return MAX(avatarHeight, [JSBubbleView cellHeightForText:bubbleViewText]) + timestampHeight + subtitleHeight;
+}
+
++ (CGFloat)neededHeightForView:(UIView *)view timestamp:(BOOL)hasTimestamp subtitle:(BOOL)hasSubtitle avatar:(BOOL)hasAvatar
+{
+    CGFloat timestampHeight = (hasTimestamp) ? TIMESTAMP_LABEL_HEIGHT : 0.0f;
+    CGFloat avatarHeight = (hasAvatar) ? kJSAvatarSize : 0.0f;
+	CGFloat subtitleHeight = hasSubtitle ? SUBTITLE_LABEL_HEIGHT : 0.0f;
+    return MAX(avatarHeight, [JSBubbleView cellHeightForView:view]) + timestampHeight + subtitleHeight;
 }
 
 #pragma mark - Copying

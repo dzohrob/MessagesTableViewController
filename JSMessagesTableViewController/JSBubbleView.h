@@ -58,6 +58,7 @@ typedef enum {
 @property (copy, nonatomic) NSString *text;
 @property (assign, nonatomic) BOOL selectedToShowCopyMenu;
 @property (retain, nonatomic) UIColor* textColor;
+@property (retain, nonatomic) UIView* contentView;
 
 - (void)setBubbleImage:(UIImage*)bubbleImage
 andSelectedBubbleImage:(UIImage*)selectedBubbleImage;
@@ -69,16 +70,12 @@ andSelectedBubbleImage:(UIImage*)selectedBubbleImage;
 
 #pragma mark - Drawing
 - (CGRect)bubbleFrame;
-- (UIImage *)bubbleImage;
-
-
 
 #pragma mark - Bubble view
-+ (UIFont *)font;
++ (UIFont*) font;
 
-+ (CGSize)textSizeForText:(NSString *)txt;
-+ (CGSize)bubbleSizeForText:(NSString *)txt;
 + (CGFloat)cellHeightForText:(NSString *)txt;
++ (CGFloat)cellHeightForView:(UIView*)view;
 
 + (int)maxCharactersPerLine;
 + (int)numberOfLinesForMessage:(NSString *)txt;
