@@ -140,12 +140,18 @@ extern NSString* const JSMessageTapNotification;
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    [self.inputToolBarView resignFirstResponder];
-    [self setEditing:NO animated:YES];
 
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
 }
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    [self.inputToolBarView resignFirstResponder];
+    [self setEditing:NO animated:YES];
+}
+
 
 - (void)didReceiveMemoryWarning
 {
