@@ -56,6 +56,8 @@ typedef enum {
 - (void)setMessage:(NSString *)msg;
 - (void)setTimestamp:(NSDate *)date;
 - (void)setAvatarImage:(UIImage *)image;
+- (void)setBubbleImage:(UIImage*)bubbleImage
+andSelectedBubbleImage:(UIImage*)selectedBubbleImage;
 
 + (CGFloat)neededHeightForText:(NSString *)bubbleViewText
                      timestamp:(BOOL)hasTimestamp

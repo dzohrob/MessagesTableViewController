@@ -38,13 +38,15 @@
 #import "UIView+AnimationOptionsForCurve.h"
 #import "UIColor+JSMessagesView.h"
 #import "JSDismissiveTextView.h"
+#import "UIImage+JSMessagesView.h"
 
 #define INPUT_HEIGHT 40.0f
 
 @interface JSMessagesViewController () <JSDismissiveTextViewDelegate>
 
 - (void)setup;
-
+- (UIImage *)bubbleImageForIncomingRowAtIndexPath:(NSIndexPath*)indexPath withStyle:(JSBubbleMessageStyle)style andSelection:(BOOL)selected;
+- (UIImage *)bubbleImageForOutgoingRowAtIndexPath:(NSIndexPath*)indexPath withStyle:(JSBubbleMessageStyle)style andSelection:(BOOL)selected;
 @end
 
 
@@ -186,13 +188,14 @@
     NSString *CellID = [NSString stringWithFormat:@"MessageCell_%d_%d_%d_%d", type, bubbleStyle, hasTimestamp, hasAvatar];
     JSBubbleMessageCell *cell = (JSBubbleMessageCell *)[tableView dequeueReusableCellWithIdentifier:CellID];
     
-    if(!cell)
+    if(!cell) {                
         cell = [[JSBubbleMessageCell alloc] initWithBubbleType:type
                                                    bubbleStyle:bubbleStyle
                                                    avatarStyle:(hasAvatar) ? avatarStyle : JSAvatarStyleNone
                                                   hasTimestamp:hasTimestamp
                                                reuseIdentifier:CellID];
-    
+
+    }
     if(hasTimestamp)
         [cell setTimestamp:[self.dataSource timestampForRowAtIndexPath:indexPath]];
     
@@ -210,6 +213,19 @@
     
     [cell setMessage:[self.dataSource textForRowAtIndexPath:indexPath]];
     [cell setBackgroundColor:tableView.backgroundColor];
+    
+    UIImage* bubbleImage, *selectedBubbleImage;
+    
+    if(type == JSBubbleMessageTypeIncoming) {
+        bubbleImage = [self bubbleImageForIncomingRowAtIndexPath:indexPath withStyle:bubbleStyle andSelection:FALSE];
+        selectedBubbleImage = [self bubbleImageForIncomingRowAtIndexPath:indexPath withStyle:bubbleStyle andSelection:TRUE];
+    }
+    else {
+        bubbleImage = [self bubbleImageForOutgoingRowAtIndexPath:indexPath withStyle:bubbleStyle andSelection:FALSE];
+        selectedBubbleImage = [self bubbleImageForOutgoingRowAtIndexPath:indexPath withStyle:bubbleStyle andSelection:TRUE];
+    }
+
+    [cell setBubbleImage:bubbleImage andSelectedBubbleImage:selectedBubbleImage];
     return cell;
 }
 
@@ -222,6 +238,64 @@
 }
 
 #pragma mark - Messages view controller
+- (UIImage *)bubbleImageForIncomingRowAtIndexPath:(NSIndexPath*)indexPath withStyle:(JSBubbleMessageStyle)style andSelection:(BOOL)selected
+{
+    switch (style) {
+        case JSBubbleMessageStyleDefault:
+            if(!selected)
+                return [UIImage bubbleDefaultIncoming];
+            else
+                return [UIImage bubbleDefaultIncomingSelected];
+            
+        case JSBubbleMessageStyleSquare:
+            if(!selected)
+                return [UIImage bubbleSquareIncoming];
+            else
+                return [UIImage bubbleSquareIncomingSelected];
+            
+        case JSBubbleMessageStyleDefaultGreen:
+            if(!selected)
+                return [UIImage bubbleDefaultIncomingGreen];
+            else
+                return [UIImage bubbleDefaultIncomingSelected];
+            
+        case JSBubbleMessageStyleCustom:
+            return [self.dataSource bubbleImageForIncomingMessageAtIndexPath:indexPath withSelection:selected];
+            
+        default:
+            return nil;
+    }
+}
+
+- (UIImage *)bubbleImageForOutgoingRowAtIndexPath:(NSIndexPath*)indexPath withStyle:(JSBubbleMessageStyle)style andSelection:(BOOL)selected
+{
+    switch (style) {
+        case JSBubbleMessageStyleDefault:
+            if(!selected)
+                return [UIImage bubbleDefaultOutgoing];
+            else
+                return [UIImage bubbleDefaultOutgoingSelected];
+            
+        case JSBubbleMessageStyleSquare:
+            if(!selected)
+                return [UIImage bubbleSquareOutgoing];
+            else
+                return [UIImage bubbleSquareOutgoingSelected];
+            
+        case JSBubbleMessageStyleDefaultGreen:
+            if(!selected)
+                return [UIImage bubbleDefaultOutgoingGreen];
+            else
+                return [UIImage bubbleDefaultOutgoingSelected];
+            
+        case JSBubbleMessageStyleCustom:
+            return [self.dataSource bubbleImageForOutgoingMessageAtIndexPath:indexPath withSelection:selected];
+            
+        default:
+            return nil;
+    }
+}
+
 - (BOOL)shouldHaveTimestampForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     switch ([self.delegate timestampPolicy]) {

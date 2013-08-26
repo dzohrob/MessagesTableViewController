@@ -198,6 +198,11 @@
                                                               dateStyle:NSDateFormatterMediumStyle
                                                               timeStyle:NSDateFormatterShortStyle];
 }
+- (void)setBubbleImage:(UIImage*)bubbleImage
+andSelectedBubbleImage:(UIImage*)selectedBubbleImage;
+{
+    [self.bubbleView setBubbleImage:bubbleImage andSelectedBubbleImage:selectedBubbleImage];
+}
 
 - (void)setAvatarImage:(UIImage *)image
 {
