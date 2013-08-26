@@ -45,7 +45,7 @@ CGFloat const kJSAvatarSize = 50.0f;
 #define kMarginRight 16
 #define kPaddingTop 4.0f
 #define kPaddingBottom 8.0f
-#define kBubblePaddingRight 35.0f
+#define kBubblePaddingRight 25.0f
 
 @interface JSBubbleView()
 
