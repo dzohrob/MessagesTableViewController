@@ -45,8 +45,6 @@
 - (void)setup;
 - (void)setupTextView;
 
-@property (nonatomic, retain) UIImageView* inputFieldBack;
-
 @end
 
 
