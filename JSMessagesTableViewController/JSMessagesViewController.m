@@ -50,7 +50,7 @@
 - (UIImage *)bubbleImageForOutgoingRowAtIndexPath:(NSIndexPath*)indexPath withStyle:(JSBubbleMessageStyle)style andSelection:(BOOL)selected;
 @end
 
-
+extern NSString* const JSMessageTapNotification;
 
 @implementation JSMessagesViewController
 
@@ -91,6 +91,11 @@
          forControlEvents:UIControlEventTouchUpInside];
     [self.inputToolBarView setSendButton:sendButton];
     [self.view addSubview:self.inputToolBarView];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleMessageTapped:)
+                                                 name:JSMessageTapNotification
+                                               object:nil];
 }
 
 - (UIButton *)sendButton
@@ -167,6 +172,13 @@
 {
     [self.delegate sendPressed:sender
                       withText:[self.inputToolBarView.textView.text trimWhitespace]];
+}
+
+- (void)handleMessageTapped:(NSNotification*)note
+{
+    NSIndexPath* path = [self.tableView indexPathForCell:note.object];
+    if([self.delegate respondsToSelector:@selector(messageTappedAtIndexPath:)])
+        [self.delegate messageTappedAtIndexPath:path];
 }
 
 #pragma mark - Table view data source

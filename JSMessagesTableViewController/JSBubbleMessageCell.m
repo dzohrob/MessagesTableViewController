@@ -65,7 +65,7 @@
 
 @end
 
-
+NSString* const JSMessageTapNotification = @"JSMessageTapNotification";
 
 @implementation JSBubbleMessageCell
 
@@ -88,6 +88,10 @@
                                                                                              action:@selector(handleLongPress:)];
     [recognizer setMinimumPressDuration:0.4];
     [self addGestureRecognizer:recognizer];
+    
+    UITapGestureRecognizer* tap = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                          action:@selector(handleTap:)];
+    [self addGestureRecognizer:tap];
 }
 
 - (void)configureTimestampLabel
@@ -328,6 +332,11 @@ andSelectedBubbleImage:(UIImage*)selectedBubbleImage;
                                                  name:UIMenuControllerWillShowMenuNotification
                                                object:nil];
     [menu setMenuVisible:YES animated:YES];
+}
+
+- (void)handleTap:(UITapGestureRecognizer*)tap
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:JSMessageTapNotification object:self];
 }
 
 #pragma mark - Notification

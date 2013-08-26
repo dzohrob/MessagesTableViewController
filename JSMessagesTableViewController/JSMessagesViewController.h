@@ -64,6 +64,7 @@ typedef enum {
 - (JSMessagesViewTimestampPolicy)timestampPolicy;
 
 @optional
+- (void)messageTappedAtIndexPath:(NSIndexPath*)indexPath;
 - (BOOL)hasSubtitleForRowAtIndexPath:(NSIndexPath *)indexPath;
 
 - (JSMessagesViewAvatarPolicy)avatarPolicy;
