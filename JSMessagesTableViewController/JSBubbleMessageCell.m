@@ -42,6 +42,9 @@
 #define SUBTITLE_LABEL_HEIGHT 16.0f
 #define SUBTITLE_LABEL_SIDE_OFFSET 15.0f
 
+#define TABLE_LEFT_GUTTER 20
+#define TABLE_RIGHT_GUTTER 20
+
 @interface JSBubbleMessageCell()
 
 @property (strong, nonatomic) JSBubbleView *bubbleView;
@@ -119,7 +122,7 @@ NSString* const JSMessageTapNotification = @"JSMessageTapNotification";
                 timestamp:(BOOL)hasTimestamp
 {
     CGFloat bubbleY = 0.0f;
-    CGFloat bubbleX = 0.0f;
+    CGFloat bubbleX = TABLE_LEFT_GUTTER;
     
     if(hasTimestamp) {
         [self configureTimestampLabel];
@@ -151,7 +154,7 @@ NSString* const JSMessageTapNotification = @"JSMessageTapNotification";
     
     CGRect frame = CGRectMake(bubbleX - offsetX,
                               bubbleY,
-                              self.contentView.frame.size.width - bubbleX,
+                              self.contentView.frame.size.width - bubbleX - TABLE_RIGHT_GUTTER,
                               self.contentView.frame.size.height - self.timestampLabel.frame.size.height);
     
     self.bubbleView = [[JSBubbleView alloc] initWithFrame:frame
@@ -159,9 +162,9 @@ NSString* const JSMessageTapNotification = @"JSMessageTapNotification";
                                               bubbleStyle:bubbleStyle];
 	
 	if(hasSubtitle) {
-		self.subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(SUBTITLE_LABEL_SIDE_OFFSET,
+		self.subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(TABLE_LEFT_GUTTER + SUBTITLE_LABEL_SIDE_OFFSET,
 																	   bubbleY + frame.size.height - SUBTITLE_LABEL_HEIGHT,
-																	   frame.size.width - bubbleX - SUBTITLE_LABEL_SIDE_OFFSET * 2,
+																	   frame.size.width - bubbleX - SUBTITLE_LABEL_SIDE_OFFSET * 2 - TABLE_RIGHT_GUTTER - TABLE_LEFT_GUTTER,
 																	   SUBTITLE_LABEL_HEIGHT)];
 		self.subtitleLabel.font = [UIFont systemFontOfSize:13.0f];
 		self.subtitleLabel.backgroundColor = [UIColor clearColor];
