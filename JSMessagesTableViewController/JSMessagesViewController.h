@@ -90,6 +90,9 @@ typedef enum {
 - (UIImage *)avatarImageForIncomingMessage __attribute__ ((deprecated));
 - (UIImage *)avatarImageForOutgoingMessage __attribute__ ((deprecated));
 
+- (UIImage*) bubbleImageForIncomingMessageAtIndexPath:(NSIndexPath*)path withSelection:(BOOL)selected;
+- (UIImage*) bubbleImageForOutgoingMessageAtIndexPath:(NSIndexPath*)path withSelection:(BOOL)selected;
+- (UIColor*) textColorForMessageAtIndexPath:(NSIndexPath*)path;
 @end
 
 

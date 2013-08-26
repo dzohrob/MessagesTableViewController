@@ -36,7 +36,6 @@
 #import "JSBubbleView.h"
 #import "JSMessageInputView.h"
 #import "NSString+JSMessagesView.h"
-#import "UIImage+JSMessagesView.h"
 
 CGFloat const kJSAvatarSize = 50.0f;
 
@@ -50,12 +49,9 @@ CGFloat const kJSAvatarSize = 50.0f;
 
 - (void)setup;
 
-+ (UIImage *)bubbleImageTypeIncomingWithStyle:(JSBubbleMessageStyle)aStyle;
-+ (UIImage *)bubbleImageTypeOutgoingWithStyle:(JSBubbleMessageStyle)aStyle;
-
+@property (retain, nonatomic) UIImage* bubbleImage;
+@property (retain, nonatomic) UIImage* selectedBubbleImage;
 @end
-
-
 
 @implementation JSBubbleView
 
@@ -63,6 +59,7 @@ CGFloat const kJSAvatarSize = 50.0f;
 @synthesize style;
 @synthesize text;
 @synthesize selectedToShowCopyMenu;
+@synthesize textColor;
 
 #pragma mark - Setup
 - (void)setup
@@ -115,6 +112,19 @@ CGFloat const kJSAvatarSize = 50.0f;
     [self setNeedsDisplay];
 }
 
+- (void)setBubbleImage:(UIImage*)bubbleImage
+andSelectedBubbleImage:(UIImage*)selectedBubbleImage {
+    self.bubbleImage = bubbleImage;
+    self.selectedBubbleImage = selectedBubbleImage;
+    [self setNeedsDisplay];
+}
+
+- (void)textColor:(UIColor*)newColor
+{
+    textColor = newColor;
+    [self setNeedsDisplay];
+}
+
 #pragma mark - Drawing
 - (CGRect)bubbleFrame
 {
@@ -125,31 +135,15 @@ CGFloat const kJSAvatarSize = 50.0f;
                       bubbleSize.height);
 }
 
-- (UIImage *)bubbleImage
-{
-    return [JSBubbleView bubbleImageForType:self.type style:self.style];
-}
-
-- (UIImage *)bubbleImageHighlighted
-{
-    switch (self.style) {
-        case JSBubbleMessageStyleDefault:
-        case JSBubbleMessageStyleDefaultGreen:
-            return (self.type == JSBubbleMessageTypeIncoming) ? [UIImage bubbleDefaultIncomingSelected] : [UIImage bubbleDefaultOutgoingSelected];
-            
-        case JSBubbleMessageStyleSquare:
-            return (self.type == JSBubbleMessageTypeIncoming) ? [UIImage bubbleSquareIncomingSelected] : [UIImage bubbleSquareOutgoingSelected];
-            
-        default:
-            return nil;
-    }
-}
-
 - (void)drawRect:(CGRect)frame
 {
     [super drawRect:frame];
     
-	UIImage *image = (self.selectedToShowCopyMenu) ? [self bubbleImageHighlighted] : [self bubbleImage];
+	UIImage *image = nil;
+    if(self.selectedToShowCopyMenu)
+        image = self.selectedBubbleImage;
+    else
+        image = self.bubbleImage;
     
     CGRect bubbleFrame = [self bubbleFrame];
 	[image drawInRect:bubbleFrame];
@@ -163,6 +157,7 @@ CGFloat const kJSAvatarSize = 50.0f;
                                   textSize.width,
                                   textSize.height);
     
+    [self.textColor set];
 	[self.text drawInRect:textFrame
                  withFont:[JSBubbleView font]
             lineBreakMode:NSLineBreakByWordWrapping
@@ -170,53 +165,6 @@ CGFloat const kJSAvatarSize = 50.0f;
 }
 
 #pragma mark - Bubble view
-+ (UIImage *)bubbleImageForType:(JSBubbleMessageType)aType style:(JSBubbleMessageStyle)aStyle
-{
-    switch (aType) {
-        case JSBubbleMessageTypeIncoming:
-            return [self bubbleImageTypeIncomingWithStyle:aStyle];
-            
-        case JSBubbleMessageTypeOutgoing:
-            return [self bubbleImageTypeOutgoingWithStyle:aStyle];
-            
-        default:
-            return nil;
-    }
-}
-
-+ (UIImage *)bubbleImageTypeIncomingWithStyle:(JSBubbleMessageStyle)aStyle
-{
-    switch (aStyle) {
-        case JSBubbleMessageStyleDefault:
-            return [UIImage bubbleDefaultIncoming];
-            
-        case JSBubbleMessageStyleSquare:
-            return [UIImage bubbleSquareIncoming];
-            
-        case JSBubbleMessageStyleDefaultGreen:
-            return [UIImage bubbleDefaultIncomingGreen];
-            
-        default:
-            return nil;
-    }
-}
-
-+ (UIImage *)bubbleImageTypeOutgoingWithStyle:(JSBubbleMessageStyle)aStyle
-{
-    switch (aStyle) {
-        case JSBubbleMessageStyleDefault:
-            return [UIImage bubbleDefaultOutgoing];
-            
-        case JSBubbleMessageStyleSquare:
-            return [UIImage bubbleSquareOutgoing];
-            
-        case JSBubbleMessageStyleDefaultGreen:
-            return [UIImage bubbleDefaultOutgoingGreen];
-            
-        default:
-            return nil;
-    }
-}
 
 + (UIFont *)font
 {
