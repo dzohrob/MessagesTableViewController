@@ -192,6 +192,11 @@
     self.bubbleView.text = msg;
 }
 
+- (void)setMessageColor:(UIColor *)textColor
+{
+    self.bubbleView.textColor = textColor;
+}
+
 - (void)setTimestamp:(NSDate *)date
 {
     self.timestampLabel.text = [NSDateFormatter localizedStringFromDate:date

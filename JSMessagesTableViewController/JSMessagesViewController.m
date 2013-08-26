@@ -226,6 +226,15 @@
     }
 
     [cell setBubbleImage:bubbleImage andSelectedBubbleImage:selectedBubbleImage];
+    
+    UIColor* color = [UIColor blackColor];
+    if([self.dataSource respondsToSelector:@selector(textColorForMessageAtIndexPath:)])
+    {
+        color = [self.dataSource textColorForMessageAtIndexPath:indexPath];
+    }
+    
+    [cell setMessageColor:color];
+    
     return cell;
 }
 

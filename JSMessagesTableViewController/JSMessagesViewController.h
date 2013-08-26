@@ -80,6 +80,7 @@ typedef enum {
 @optional
 - (UIImage*) bubbleImageForIncomingMessageAtIndexPath:(NSIndexPath*)path withSelection:(BOOL)selected;
 - (UIImage*) bubbleImageForOutgoingMessageAtIndexPath:(NSIndexPath*)path withSelection:(BOOL)selected;
+- (UIColor*) textColorForMessageAtIndexPath:(NSIndexPath*)path;
 @end
 
 

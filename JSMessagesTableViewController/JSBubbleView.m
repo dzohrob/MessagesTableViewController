@@ -59,6 +59,7 @@ CGFloat const kJSAvatarSize = 50.0f;
 @synthesize style;
 @synthesize text;
 @synthesize selectedToShowCopyMenu;
+@synthesize textColor;
 
 #pragma mark - Setup
 - (void)setup
@@ -118,6 +119,12 @@ andSelectedBubbleImage:(UIImage*)selectedBubbleImage {
     [self setNeedsDisplay];
 }
 
+- (void)textColor:(UIColor*)newColor
+{
+    textColor = newColor;
+    [self setNeedsDisplay];
+}
+
 #pragma mark - Drawing
 - (CGRect)bubbleFrame
 {
@@ -150,6 +157,7 @@ andSelectedBubbleImage:(UIImage*)selectedBubbleImage {
                                   textSize.width,
                                   textSize.height);
     
+    [self.textColor set];
 	[self.text drawInRect:textFrame
                  withFont:[JSBubbleView font]
             lineBreakMode:NSLineBreakByWordWrapping

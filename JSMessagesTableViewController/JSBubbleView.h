@@ -57,6 +57,7 @@ typedef enum {
 @property (assign, nonatomic) JSBubbleMessageStyle style;
 @property (copy, nonatomic) NSString *text;
 @property (assign, nonatomic) BOOL selectedToShowCopyMenu;
+@property (retain, nonatomic) UIColor* textColor;
 
 - (void)setBubbleImage:(UIImage*)bubbleImage
 andSelectedBubbleImage:(UIImage*)selectedBubbleImage;
